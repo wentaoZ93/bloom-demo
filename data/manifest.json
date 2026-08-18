@@ -1,0 +1,38 @@
+{
+  "totalFrames": 121,
+  "naturalFrames": {
+    "path": "data/frames-natural/{index}.webp",
+    "indexFormat": "%03d"
+  },
+  "sceneFrames": {
+    "path": "data/frames-scene/{index}.webp",
+    "indexFormat": "%03d",
+    "size": 480
+  },
+  "stage": {
+    "size": 540
+  },
+  "options": {
+    "lockedAspect": {
+      "minScalar": 200,
+      "maxScalar": 460,
+      "initialScalar": 200
+    },
+    "maskWindow": {
+      "minScrubSize": 140,
+      "maxScrubSize": 340,
+      "minFrameSize": 80,
+      "initialFrame": {
+        "width": 160,
+        "height": 160,
+        "x": 190,
+        "y": 190
+      }
+    },
+    "clickToBloom": {
+      "closedSize": 80,
+      "openSize": 460,
+      "duration": 1100
+    }
+  }
+}
