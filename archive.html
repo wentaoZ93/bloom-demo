@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bloom · all options (archive)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="row">
+
+    <!-- ============== Option 1 · Locked aspect ============== -->
+    <section class="card">
+      <header class="card__head">
+        <h2>Option 1 · Locked aspect</h2>
+        <span class="card__tag">drag to scrub</span>
+      </header>
+      <p class="card__desc">
+        Frame stays centered. Aspect ratio always matches the flower's natural shape.
+        Drag from any edge or corner — only the size scalar changes.
+      </p>
+
+      <div class="stage stage--centered">
+        <div class="frame frame--locked" data-option="1">
+          <canvas class="frame__canvas"></canvas>
+          <div class="rh rh--n"  data-dir="n"></div>
+          <div class="rh rh--s"  data-dir="s"></div>
+          <div class="rh rh--w"  data-dir="w"></div>
+          <div class="rh rh--e"  data-dir="e"></div>
+          <div class="rh rh--nw" data-dir="nw"></div>
+          <div class="rh rh--ne" data-dir="ne"></div>
+          <div class="rh rh--sw" data-dir="sw"></div>
+          <div class="rh rh--se" data-dir="se"></div>
+        </div>
+      </div>
+
+      <div class="readout" data-readout="1">— · frame 1 / 121</div>
+      <div class="progress"><div class="progress__fill" data-progress="1"></div></div>
+    </section>
+
+    <!-- ============== Option 2 · Mask window ============== -->
+    <section class="card">
+      <header class="card__head">
+        <h2>Option 2 · Mask window</h2>
+        <span class="card__tag">drag body · 8-way resize</span>
+      </header>
+      <p class="card__desc">
+        Flower is fixed in the stage. Frame is a window — drag body to move,
+        any edge or corner to resize. Area drives bloom progress.
+      </p>
+
+      <div class="stage">
+        <div class="frame frame--mask" data-option="2">
+          <canvas class="frame__canvas"></canvas>
+          <div class="rh rh--n"  data-dir="n"></div>
+          <div class="rh rh--s"  data-dir="s"></div>
+          <div class="rh rh--w"  data-dir="w"></div>
+          <div class="rh rh--e"  data-dir="e"></div>
+          <div class="rh rh--nw" data-dir="nw"></div>
+          <div class="rh rh--ne" data-dir="ne"></div>
+          <div class="rh rh--sw" data-dir="sw"></div>
+          <div class="rh rh--se" data-dir="se"></div>
+        </div>
+      </div>
+
+      <div class="readout" data-readout="2">— · frame 1 / 121</div>
+      <div class="progress"><div class="progress__fill" data-progress="2"></div></div>
+    </section>
+
+    <!-- ============== Option 3 · Click to bloom ============== -->
+    <section class="card">
+      <header class="card__head">
+        <h2>Option 3 · Click to bloom</h2>
+        <span class="card__tag">tap to open / close</span>
+      </header>
+      <p class="card__desc">
+        Centered button at rest. Click to play the bloom forward with an ease-out
+        curve; click again to close it back. Animations are interruptible.
+      </p>
+
+      <div class="stage">
+        <div class="frame frame--button" data-option="3">
+          <canvas class="frame__canvas"></canvas>
+        </div>
+      </div>
+
+      <div class="readout" data-readout="3">— · frame 1 / 121</div>
+      <div class="progress"><div class="progress__fill" data-progress="3"></div></div>
+    </section>
+
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

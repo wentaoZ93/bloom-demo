@@ -1,6 +1,13 @@
-# Bloom · drag-to-scrub demo
+# Bloom · click-to-bloom demo
 
-Three interaction patterns for the same flower bloom video:
+**`index.html`** is the direct solution — *Click to bloom*: at rest, the
+frame is a small centered button. Click to play the bloom forward with an
+ease-out curve, click again to close. Animations are interruptible.
+Rendered as a clean black stage, made to embed (e.g. inside Framer).
+
+- Live: https://wentaoz93.github.io/bloom-demo/
+
+**`archive.html`** keeps the two archived alternatives alongside it:
 
 - **Option 1 — Locked aspect**: frame is centered, its aspect ratio always
   matches the flower's natural shape. Eight resize handles all map onto a
@@ -8,15 +15,15 @@ Three interaction patterns for the same flower bloom video:
 - **Option 2 — Mask window**: the flower sits in a fixed virtual scene, and
   the frame is an independent draggable / resizable viewport over it. The
   frame's area drives bloom progress.
-- **Option 3 — Click to bloom**: at rest, the frame is a small centered
-  button. Click to play the bloom forward with an ease-out curve, click
-  again to close. Animations are interruptible.
+
+- Archive: https://wentaoz93.github.io/bloom-demo/archive.html
 
 ## File layout
 
 ```
 bloom-demo/
-├── index.html               # markup (no inline JS or CSS)
+├── index.html               # direct solution: click to bloom only
+├── archive.html             # archived: all three options side by side
 ├── styles.css               # all visual styling
 ├── app.js                   # interaction logic (ES module)
 ├── data/

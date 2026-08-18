@@ -408,57 +408,69 @@ async function main() {
     fetch("data/aspects.json").then(r => r.json()),
   ]);
 
-  const naturalFrames = new FrameSequence(manifest.naturalFrames.path, manifest.totalFrames);
-  const sceneFrames   = new FrameSequence(manifest.sceneFrames.path,   manifest.totalFrames);
+  // Each option only boots if its markup is on the page — index.html carries
+  // just option 3, archive.html carries all three.
+  const el1 = document.querySelector('.frame[data-option="1"]');
+  const el2 = document.querySelector('.frame[data-option="2"]');
+  const el3 = document.querySelector('.frame[data-option="3"]');
+
+  const naturalFrames = el1
+    ? new FrameSequence(manifest.naturalFrames.path, manifest.totalFrames)
+    : null;
+  const sceneFrames = (el2 || el3)
+    ? new FrameSequence(manifest.sceneFrames.path, manifest.totalFrames)
+    : null;
 
   // Option 1 · Locked aspect
-  const opt1 = manifest.options.lockedAspect;
-  const c1 = new LockedAspectController({
-    frameEl:    document.querySelector('.frame[data-option="1"]'),
-    readoutEl:  document.querySelector('[data-readout="1"]'),
-    barEl:      document.querySelector('[data-progress="1"]'),
-    frames:     naturalFrames,
-    aspects,
-    minScalar:     opt1.minScalar,
-    maxScalar:     opt1.maxScalar,
-    initialScalar: opt1.initialScalar,
-  });
+  if (el1) {
+    const opt1 = manifest.options.lockedAspect;
+    const c1 = new LockedAspectController({
+      frameEl:    el1,
+      readoutEl:  document.querySelector('[data-readout="1"]'),
+      barEl:      document.querySelector('[data-progress="1"]'),
+      frames:     naturalFrames,
+      aspects,
+      minScalar:     opt1.minScalar,
+      maxScalar:     opt1.maxScalar,
+      initialScalar: opt1.initialScalar,
+    });
+    naturalFrames.ready.then(() => c1.render());
+  }
 
   // Option 2 · Mask window
-  const opt2 = manifest.options.maskWindow;
-  const c2 = new MaskWindowController({
-    frameEl:    document.querySelector('.frame[data-option="2"]'),
-    readoutEl:  document.querySelector('[data-readout="2"]'),
-    barEl:      document.querySelector('[data-progress="2"]'),
-    frames:     sceneFrames,
-    stageSize:    manifest.stage.size,
-    sceneSize:    manifest.sceneFrames.size,
-    minScrubSize: opt2.minScrubSize,
-    maxScrubSize: opt2.maxScrubSize,
-    minFrameSize: opt2.minFrameSize,
-    initialFrame: opt2.initialFrame,
-  });
+  if (el2) {
+    const opt2 = manifest.options.maskWindow;
+    const c2 = new MaskWindowController({
+      frameEl:    el2,
+      readoutEl:  document.querySelector('[data-readout="2"]'),
+      barEl:      document.querySelector('[data-progress="2"]'),
+      frames:     sceneFrames,
+      stageSize:    manifest.stage.size,
+      sceneSize:    manifest.sceneFrames.size,
+      minScrubSize: opt2.minScrubSize,
+      maxScrubSize: opt2.maxScrubSize,
+      minFrameSize: opt2.minFrameSize,
+      initialFrame: opt2.initialFrame,
+    });
+    sceneFrames.ready.then(() => c2.render());
+  }
 
   // Option 3 · Click to bloom
-  const opt3 = manifest.options.clickToBloom;
-  const c3 = new ClickToBloomController({
-    frameEl:    document.querySelector('.frame[data-option="3"]'),
-    readoutEl:  document.querySelector('[data-readout="3"]'),
-    barEl:      document.querySelector('[data-progress="3"]'),
-    frames:     sceneFrames,
-    stageSize:  manifest.stage.size,
-    sceneSize:  manifest.sceneFrames.size,
-    closedSize: opt3.closedSize,
-    openSize:   opt3.openSize,
-    duration:   opt3.duration,
-  });
-
-  // Re-render once frame sequences finish loading
-  naturalFrames.ready.then(() => c1.render());
-  sceneFrames.ready.then(() => {
-    c2.render();
-    c3.paint();
-  });
+  if (el3) {
+    const opt3 = manifest.options.clickToBloom;
+    const c3 = new ClickToBloomController({
+      frameEl:    el3,
+      readoutEl:  document.querySelector('[data-readout="3"]'),
+      barEl:      document.querySelector('[data-progress="3"]'),
+      frames:     sceneFrames,
+      stageSize:  manifest.stage.size,
+      sceneSize:  manifest.sceneFrames.size,
+      closedSize: opt3.closedSize,
+      openSize:   opt3.openSize,
+      duration:   opt3.duration,
+    });
+    sceneFrames.ready.then(() => c3.paint());
+  }
 }
 
 main();
