@@ -33,6 +33,22 @@ function rafScheduler(fn) {
 }
 
 /**
+ * Draw a sequence frame onto a canvas. If the image hasn't finished
+ * downloading yet, repaint as soon as it does — otherwise a click during
+ * the initial load leaves the canvas blank until the whole sequence is in.
+ * `repaint` must be a stable reference so repeated calls don't stack
+ * duplicate listeners.
+ */
+function drawFrame(ctx, canvas, im, repaint) {
+  if (!im) return;
+  if (im.complete && im.naturalWidth) {
+    ctx.drawImage(im, 0, 0, canvas.width, canvas.height);
+  } else {
+    im.addEventListener("load", repaint, { once: true });
+  }
+}
+
+/**
  * Ease-out (cubic): fast start, gentle settle.
  * From animations.dev easing blueprint.
  *   f(t) = 1 - (1 - t)^3
@@ -52,7 +68,17 @@ class FrameSequence {
     this.images = Array.from({ length: count }, (_, i) => {
       const idx = String(i).padStart(3, "0");
       const img = new Image();
-      img.src = pathTemplate.replace("{index}", idx);
+      const src = pathTemplate.replace("{index}", idx);
+      // Retry transient fetch failures (GitHub Pages occasionally 503s a
+      // frame) — a permanently missing frame gives up after 3 attempts.
+      let attempts = 0;
+      img.addEventListener("error", () => {
+        if (attempts < 3) {
+          attempts += 1;
+          setTimeout(() => { img.src = src + "?r=" + attempts; }, 400 * attempts);
+        }
+      });
+      img.src = src;
       return img;
     });
     this.ready = Promise.all(
@@ -97,6 +123,10 @@ class LockedAspectController {
     this.render();
   }
 
+  drawCurrent(im) {
+    drawFrame(this.ctx, this.canvas, im, this.scheduleRender);
+  }
+
   render() {
     const t = clamp((this.scalar - this.MIN) / (this.MAX - this.MIN), 0, 1);
     const idx = Math.min(this.frames.length - 1, Math.floor(t * (this.frames.length - 1)));
@@ -113,10 +143,7 @@ class LockedAspectController {
     this.canvas.style.width  = w + "px";
     this.canvas.style.height = h + "px";
 
-    const im = this.frames.get(idx);
-    if (im && im.complete) {
-      this.ctx.drawImage(im, 0, 0, this.canvas.width, this.canvas.height);
-    }
+    this.drawCurrent(this.frames.get(idx));
 
     this.readout.textContent = `${w} × ${h} · frame ${idx + 1} / ${this.frames.length}`;
     this.bar.style.width = (t * 100) + "%";
@@ -191,6 +218,10 @@ class MaskWindowController {
     this.render();
   }
 
+  drawCurrent(im) {
+    drawFrame(this.ctx, this.canvas, im, this.scheduleRender);
+  }
+
   render() {
     const fx = parseFloat(this.frame.style.left) || 0;
     const fy = parseFloat(this.frame.style.top)  || 0;
@@ -213,10 +244,7 @@ class MaskWindowController {
     this.canvas.width  = Math.round(this.SCENE * dpr);
     this.canvas.height = Math.round(this.SCENE * dpr);
 
-    const im = this.frames.get(idx);
-    if (im && im.complete) {
-      this.ctx.drawImage(im, 0, 0, this.canvas.width, this.canvas.height);
-    }
+    this.drawCurrent(this.frames.get(idx));
 
     this.readout.textContent = `${fw} × ${fh} · frame ${idx + 1} / ${this.frames.length}`;
     this.bar.style.width = (t * 100) + "%";
@@ -338,6 +366,8 @@ class ClickToBloomController {
     this.animStart = null;
     this.rafId = 0;
 
+    this.repaint = () => this.paint();
+
     this.frame.addEventListener("click", () => this.toggle());
     this.paint();
   }
@@ -363,10 +393,7 @@ class ClickToBloomController {
     this.canvas.width  = Math.round(this.SCENE * dpr);
     this.canvas.height = Math.round(this.SCENE * dpr);
 
-    const im = this.frames.get(idx);
-    if (im && im.complete) {
-      this.ctx.drawImage(im, 0, 0, this.canvas.width, this.canvas.height);
-    }
+    drawFrame(this.ctx, this.canvas, this.frames.get(idx), this.repaint);
 
     this.readout.textContent =
       `${Math.round(size)} × ${Math.round(size)} · frame ${idx + 1} / ${this.frames.length}`;
